@@ -1,4 +1,4 @@
-# Shadow Guard 🛡️
+# wlcome-rooms-in-public-servers 🛡️
 
 A Discord selfbot that sends automatic welcome messages when someone joins a voice channel.
 
