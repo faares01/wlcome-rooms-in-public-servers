@@ -1,135 +1,83 @@
-# حارس الظل — Shadow Guard Bot
+# Shadow Guard 🛡️
 
-> بوت ديسكورد سكرتير شخصي مع واجهة CLI مدمجة
+A Discord selfbot that sends automatic welcome messages when someone joins a voice channel.
 
 ---
 
-## 📁 هيكل الملفات
+## Features
+
+**Voice Welcome**
+Sends a welcome message in the voice channel's text chat when a user joins.
+
+- 4 status modes — each with its own custom message:
+  - `online` — standard welcome
+  - `dnd` — do not disturb message
+  - `afk` — away message
+  - `custom4` — fully custom
+- Optional **waiting room** support — welcomes users in the waiting room without repeating when they move to the main room
+- **5-minute cooldown** per user — prevents spam
+- Owner is **never** welcomed
+- **AFK auto-reply** — if someone mentions you or types a keyword while status is `afk`, the bot replies automatically
+
+---
+
+## Files
 
 ```
 shadow_guard/
-├── main.py                  ← البوت الكامل + CLI (ملف واحد)
-├── requirements.txt         ← المكتبات المطلوبة
+├── main.py                 ← bot + CLI in one file
+├── requirements.txt
 ├── config/
-│   ├── token.txt            ← ⚠ توكن البوت (لا تشاركه أبداً)
-│   ├── settings.json        ← جميع الإعدادات والـ IDs
-│   └── messages.json        ← الرسائل والكلمات المفتاحية
+│   ├── token.txt           ← your account token (never share this)
+│   ├── settings.json       ← server/room IDs and status
+│   └── messages.json       ← welcome messages and AFK keywords
 └── data/
-    └── cooldowns.json       ← كولداون تلقائي (لا تعدله)
+    ├── cooldowns.json      ← auto-managed
+    └── bot.log             ← discord logs
 ```
 
 ---
 
-## ⚙️ التثبيت والتشغيل
+## Setup
 
 ```bash
-# 1. تثبيت المكتبات
 pip install -r requirements.txt
-
-# 2. تشغيل البوت
 python main.py
 ```
 
-سيطلب منك التوكن في أول تشغيل إذا لم يكن موجوداً.
+On first run it will ask for your token. After that use the arrow-key CLI to configure everything.
 
 ---
 
-## 🖥️ أوامر CLI
+## CLI Navigation
 
-| الأمر | الوظيفة |
-|-------|---------|
-| `help` | عرض جميع الأوامر |
-| `status` | حالة البوت والميزات |
-| `ids` | عرض جميع الـ IDs المحفوظة |
-| `token` | تغيير توكن البوت |
-| `name <اسم>` | تغيير اسم البوت فوراً |
-| `reload` | إعادة تحميل جميع الملفات |
-| `feature welcome on/off` | تشغيل/إيقاف الترحيب |
-| `feature mention on/off` | مراقبة المنشن |
-| `feature surveillance on/off` | مراقبة شخص |
-| `feature follow on/off` | متابعة صوتية |
-| `welcome` | إعداد ميزة الترحيب |
-| `setstatus online/dnd/afk/custom4` | تغيير الحالة (في أي وقت) |
-| `mention` | إعداد مراقبة المنشن |
-| `surveillance` | إعداد مراقبة شخص |
-| `follow` | إعداد المتابعة الصوتية |
-| `messages` | تعديل الرسائل والكلمات |
-| `test` | إرسال رسالة اختبار |
-| `exit` | إيقاف البوت |
+| Key | Action |
+|-----|--------|
+| `↑` `↓` | Navigate |
+| `Enter` | Select |
+| `Esc` | Go back |
+
+**Menus:**
+- **Welcome Setup** — set server ID, room IDs, status, owner ID, token
+- **Messages** — edit each status message and AFK keywords
+- **Test** — sends a `%test` message to your configured rooms
+- **Status** — shows current config at a glance
 
 ---
 
-## 🔧 الميزات
+## Discord Command
 
-### ① ترحيب روم موقّت
-- يرسل ترحيباً حين يدخل شخص الروم الصوتي
-- كولداون 5 دقائق لكل شخص
-- 3 حالات + custom4 — كل حالة رسالة مختلفة
-- دعم روم انتظار (لا يرسل مرتين في نفس الروم)
-- لا يرسل للمالك أبداً
-- وضع AFK: يرد تلقائياً إذا ذُكر المالك أو كتب أحد كلمات مفتاحية
-- **يمكن تغيير الحالة في أي وقت** بأمر `setstatus`
-- في Discord: `%test` (للمالك فقط) يرسل رسالة تجريبية
-
-### ② مراقبة المنشن
-- يراقب سيرفراً محدداً
-- أي ذكر للمالك (ID أو اسم) يُرسَل إلى سيرفر خاص
-- الرسالة تحتوي: من ذكر، الرسالة، رابط مباشر، الوقت
-
-### ③ مراقبة شخص
-- يراقب شخصاً محدداً في سيرفر محدد
-- يُرسَل تحديث عند أي رسالة أو حركة صوتية
-- التقارير تُرسَل في قناة محددة
-
-### ⑤ متابعة صوتية
-- البوت يتبع شخصاً محدداً في الرومات الصوتية
-- ينضم معه ويغادر معه
-- دعم قائمة رومات محظورة
+| Command | Description |
+|---------|-------------|
+| `%test` | Sends a test welcome to configured rooms (owner only) |
 
 ---
 
-## ✏️ تعديل الرسائل
+## Requirements
 
-**config/messages.json** — تعديل مباشر أو عبر أمر `messages` في CLI:
-
-```json
-{
-  "statuses": {
-    "online":  "أهلاً [mention]! ...",
-    "dnd":     "مرحباً [mention]! ...",
-    "afk":     "أهلاً [mention]! ...",
-    "custom4": "رسالة مخصصة هنا"
-  },
-  "afk_auto_reply": "فارس غائب الآن...",
-  "afk_keywords": ["وين فارس", "فارس وين", "..."]
-}
-```
-
-> `[mention]` = مكان منشن الشخص في الرسالة
+- Python 3.10+
+- [`discord.py-self`](https://pypi.org/project/discord.py-self/)
 
 ---
 
-## ⚠️ تنبيهات مهمة
-
-**config/settings.json** يحتوي:
-
-| المفتاح | الوصف |
-|---------|-------|
-| `owner_id` | ID المالك — لا يُرسَل له ترحيب |
-| `owner_names` | أسماء المالك لمراقبة المنشن |
-| `main_server_id` | السيرفر الرئيسي (ميزة 2) |
-| `private_server_id` | السيرفر الخاص للبوت |
-| `private_log_channel_id` | قناة إشعارات المنشن |
-| `follow_target_id` | ID الشخص للمتابعة الصوتية |
-| `blocked_voice_rooms` | رومات محظورة من المتابعة |
-
-**ملاحظات:**
-- لا تشارك `config/token.txt` مع أي أحد
-- تأكد أن البوت لديه صلاحيات كافية في السيرفرات
-- لميزة المنشن: البوت يجب أن يكون في كلا السيرفرين
-- لميزة المتابعة: يحتاج صلاحية `Connect` في الرومات الصوتية
-- ميزات متعددة يمكن تشغيلها في نفس الوقت
-
----
-
-**Python 3.10+  |  discord.py 2.3+**
+> ⚠️ **This is a selfbot.** Using selfbots is against Discord's Terms of Service. Use at your own risk.
